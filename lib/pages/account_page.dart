@@ -70,7 +70,7 @@ Widget _buildProfileHeader() {
           ),
           child: ClipOval(
             child: Image.asset(
-              'assets/images/logo.jpeg',
+              'assets/images/profile.jpeg',
               width: 90,
               height: 90,
               fit: BoxFit.cover,

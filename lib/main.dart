@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/pages/account_page.dart';
+import 'package:ecommerce_app/pages/cart_page.dart';
 import 'package:ecommerce_app/pages/login_page.dart';
 import 'package:ecommerce_app/pages/register_page.dart';
 import 'package:flutter/material.dart'; // <-- Pastikan import file login_page.dart
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         'LoginPage': (context) => const LoginPage(),
         'RegisterPage': (context) => const RegisterPage(),
         'AccountPage': (context) => const AccountPage(),
+        'CartPage': (context) => const CartPage(),
       },
     );
   }
