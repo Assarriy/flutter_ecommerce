@@ -23,138 +23,133 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      // AppBar transparan untuk tombol kembali
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      extendBodyBehindAppBar: true, // Membuat body berada di belakang AppBar
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Header dengan gradasi
-            Container(
-              height: 250,
+      extendBodyBehindAppBar: true,
+      body: Column(
+        children: [
+          // BAGIAN 1: Panel Gambar (Bagian Atas)
+          Expanded(
+            flex: 2,
+            child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.lightBlue],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                image: DecorationImage(
+                  image: AssetImage('assets/images/login.jpeg'), // Ganti dengan gambar Anda
+                  fit: BoxFit.cover,
                 ),
               ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 40),
-                  Text(
-                    'Create Account',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Start your happy journey with us!',
-                    style: TextStyle(fontSize: 18, color: Colors.white70),
+                ),
+                alignment: Alignment.bottomLeft,
+                padding: const EdgeInsets.all(24.0),
+                child: const Text(
+                  "Buat Akun\nBaru Anda",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                ),
               ),
             ),
-            // Form Card
-            Transform.translate(
-              offset: const Offset(0, -40), // Menarik form ke atas
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: _buildRegisterForm(),
+          ),
+          // BAGIAN 2: Panel Formulir (Bagian Bawah)
+          Expanded(
+            flex: 3,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: _buildRegisterForm(),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildRegisterForm() {
-    return Container(
-      padding: const EdgeInsets.all(24.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Form(
-        key: _formKey,
-        child: AnimationLimiter(
-          child: Column(
-            children: AnimationConfiguration.toStaggeredList(
-              duration: const Duration(milliseconds: 375),
-              childAnimationBuilder: (widget) => SlideAnimation(
-                verticalOffset: 50.0,
-                child: FadeInAnimation(child: widget),
-              ),
-              children: [
-                _buildTextField(
-                  controller: _nameController,
-                  label: 'Full Name',
-                  icon: Icons.person_outline,
-                  validator: (value) => value == null || value.isEmpty ? 'Please enter your name' : null,
-                ),
-                const SizedBox(height: 20),
-                _buildTextField(
-                  controller: _emailController,
-                  label: 'Email',
-                  icon: Icons.email_outlined,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter your email';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Please enter a valid email';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                _buildPasswordField(
-                  controller: _passwordController,
-                  label: 'Password',
-                  isVisible: _isPasswordVisible,
-                  toggleVisibility: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                ),
-                const SizedBox(height: 20),
-                _buildPasswordField(
-                  controller: _confirmPasswordController,
-                  label: 'Confirm Password',
-                  isVisible: _isConfirmPasswordVisible,
-                  toggleVisibility: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
-                  validator: (value) {
-                    if (value != _passwordController.text) return 'Passwords do not match';
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-                InteractiveButton(
-                  onTap: () {
-                    if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Creating account...')),
-                      );
-                      // Tambahkan logika navigasi setelah berhasil mendaftar
-                    }
-                  },
-                  text: 'Sign Up',
-                ),
-                const SizedBox(height: 20),
-                _buildLoginLink(context),
-              ],
+    return Form(
+      key: _formKey,
+      child: AnimationLimiter(
+        child: Column(
+          children: AnimationConfiguration.toStaggeredList(
+            duration: const Duration(milliseconds: 400),
+            childAnimationBuilder: (widget) => SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(child: widget),
             ),
+            children: [
+              const SizedBox(height: 10),
+              _buildTextField(
+                controller: _nameController,
+                label: 'Nama Lengkap',
+                icon: Icons.person_outline,
+                validator: (value) => value == null || value.isEmpty ? 'Masukkan nama Anda' : null,
+              ),
+              const SizedBox(height: 20),
+              _buildTextField(
+                controller: _emailController,
+                label: 'Email',
+                icon: Icons.email_outlined,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Masukkan email Anda';
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Masukkan email yang valid';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              _buildPasswordField(
+                controller: _passwordController,
+                label: 'Password',
+                isVisible: _isPasswordVisible,
+                toggleVisibility: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+              ),
+              const SizedBox(height: 20),
+              _buildPasswordField(
+                controller: _confirmPasswordController,
+                label: 'Konfirmasi Password',
+                isVisible: _isConfirmPasswordVisible,
+                toggleVisibility: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                validator: (value) {
+                  if (value != _passwordController.text) return 'Password tidak cocok';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 30),
+              InteractiveButton(
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Membuat akun...')),
+                    );
+                  }
+                },
+                text: 'Daftar',
+              ),
+              const SizedBox(height: 20),
+              _buildLoginLink(context),
+            ],
           ),
         ),
       ),
@@ -169,13 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }) {
     return TextFormField(
       controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.primary),
-        filled: true,
-        fillColor: AppColors.background,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      ),
+      decoration: _buildInputDecoration(label, icon),
       validator: validator,
     );
   }
@@ -190,23 +179,32 @@ class _RegisterPageState extends State<RegisterPage> {
     return TextFormField(
       controller: controller,
       obscureText: !isVisible,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
-        filled: true,
-        fillColor: AppColors.background,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      decoration: _buildInputDecoration(label, Icons.lock_outline).copyWith(
         suffixIcon: IconButton(
           icon: Icon(isVisible ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecondary),
           onPressed: toggleVisibility,
         ),
       ),
       validator: (value) {
-        if (value == null || value.isEmpty) return 'This field cannot be empty';
-        if (label == 'Password' && value.length < 6) return 'Password must be at least 6 characters';
+        if (value == null || value.isEmpty) return 'Kolom ini tidak boleh kosong';
+        if (label == 'Password' && value.length < 6) return 'Password minimal 6 karakter';
         if (validator != null) return validator(value);
         return null;
       },
+    );
+  }
+
+  InputDecoration _buildInputDecoration(String label, IconData icon) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: AppColors.primary),
+      filled: true,
+      fillColor: AppColors.background,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      ),
     );
   }
 
@@ -215,7 +213,7 @@ class _RegisterPageState extends State<RegisterPage> {
       onPressed: () => Navigator.pop(context),
       child: const Text.rich(
         TextSpan(
-          text: "Already have an account? ",
+          text: "Sudah punya akun? ",
           style: TextStyle(color: AppColors.textSecondary),
           children: [
             TextSpan(
@@ -229,11 +227,10 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-// Widget tombol interaktif yang bisa digunakan di banyak halaman
+// Widget tombol interaktif
 class InteractiveButton extends StatefulWidget {
   final VoidCallback onTap;
   final String text;
-
   const InteractiveButton({super.key, required this.onTap, required this.text});
 
   @override
@@ -260,29 +257,10 @@ class _InteractiveButtonState extends State<InteractiveButton> {
           height: 55,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.lightBlue],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            gradient: const LinearGradient(colors: [AppColors.primary, AppColors.lightBlue], begin: Alignment.centerLeft, end: Alignment.centerRight),
+            boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
           ),
-          child: Center(
-            child: Text(
-              widget.text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          child: Center(child: Text(widget.text, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
         ),
       ),
     );

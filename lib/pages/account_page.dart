@@ -9,95 +9,100 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          _buildElegantAppBar(),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-              child: _buildSettingsList(context),
+    // PERUBAHAN: Jumlah tab diubah menjadi 2
+    return DefaultTabController(
+      length: 2, // Jumlah tab: Pengaturan, Wishlist
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: const Text('Akun Saya', style: AppTextStyles.headerTitle),
+          backgroundColor: AppColors.background,
+          elevation: 0,
+          centerTitle: true,
+        ),
+        body: Column(
+          children: [
+            _buildUserProfileCard(),
+            // PERUBAHAN: Tab 'Pesanan Saya' dihapus
+            const TabBar(
+              labelColor: AppColors.primary,
+              unselectedLabelColor: AppColors.textSecondary,
+              indicatorColor: AppColors.primary,
+              tabs: [
+                Tab(icon: Icon(Icons.settings), text: 'Pengaturan'),
+                Tab(icon: Icon(Icons.favorite_border), text: 'Wishlist'),
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildSettingsList(context),
+                  // PERUBAHAN: Konten 'Pesanan Saya' dihapus
+                  _buildPlaceholder(icon: Icons.favorite, message: 'Wishlist Anda masih kosong.'),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-Widget _buildElegantAppBar() {
-  return SliverAppBar(
-    expandedHeight: 250.0,
-    backgroundColor: AppColors.primary,
-    elevation: 0,
-    pinned: true,
-    stretch: true,
-    flexibleSpace: FlexibleSpaceBar(
-      centerTitle: true,
-      titlePadding: const EdgeInsets.only(bottom: 16),
-      // title: const Text('My Account', style: TextStyle(fontWeight: FontWeight.bold)),
-      background: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.lightBlue],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+// Widget untuk kartu profil (tidak berubah)
+Widget _buildUserProfileCard() {
+  return Container(
+    margin: const EdgeInsets.all(16.0),
+    padding: const EdgeInsets.all(20.0),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          blurRadius: 10,
+          offset: const Offset(0, 5),
         ),
-        child: Align(
-          alignment: Alignment.center,
-          child: _buildProfileHeader(),
-        ),
-      ),
+      ],
     ),
-  );
-}
-
-Widget _buildProfileHeader() {
-  return Padding(
-    padding: const EdgeInsets.only(top: 50.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    child: Row(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 3),
-            boxShadow: const [
-              BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
+        const CircleAvatar(
+          radius: 40,
+          backgroundImage: AssetImage('assets/images/profile.jpeg'),
+        ),
+        const SizedBox(width: 20),
+        const Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Wibowo Assariy', style: AppTextStyles.headerTitle),
+              SizedBox(height: 4),
+              Text('admin@example.com', style: TextStyle(color: AppColors.textSecondary)),
             ],
           ),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/images/profile.jpeg',
-              width: 90,
-              height: 90,
-              fit: BoxFit.cover,
-            ),
-          ),
         ),
-        const SizedBox(height: 12),
-        const Text('Wibowo Assariy', style: AppTextStyles.profileName),
-        const SizedBox(height: 4),
-        const Text('admin@example.com', style: AppTextStyles.profileEmail),
+        IconButton(
+          icon: const Icon(Icons.edit_outlined, color: AppColors.textSecondary),
+          onPressed: () {},
+        ),
       ],
     ),
   );
 }
 
+// Widget daftar pengaturan (tidak berubah)
 Widget _buildSettingsList(BuildContext context) {
   final settings = [
-    {'icon': Icons.person_outline, 'title': 'Edit Profile'},
-    {'icon': Icons.lock_outline, 'title': 'Change Password'},
-    {'icon': Icons.notifications_outlined, 'title': 'Notifications'},
-    {'icon': Icons.help_outline, 'title': 'Help & Support'},
+    {'icon': Icons.lock_outline, 'title': 'Ubah Password'},
+    {'icon': Icons.notifications_outlined, 'title': 'Notifikasi'},
+    {'icon': Icons.help_outline, 'title': 'Bantuan & Dukungan'},
     {'icon': Icons.logout, 'title': 'Logout'},
   ];
 
-  void handleTap(String title) {
+  void handleTap(String title, BuildContext context) {
     switch (title) {
-      case 'Change Password':
+      case 'Ubah Password':
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ChangePasswordPage()));
         break;
       case 'Logout':
@@ -109,87 +114,75 @@ Widget _buildSettingsList(BuildContext context) {
   }
 
   return AnimationLimiter(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Settings", style: AppTextStyles.headerTitle),
-        const SizedBox(height: 10),
-        ...List.generate(settings.length, (index) {
-          final item = settings[index];
-          return AnimationConfiguration.staggeredList(
-            position: index,
-            duration: const Duration(milliseconds: 400),
-            child: SlideAnimation(
-              verticalOffset: 50.0,
-              child: FadeInAnimation(
-                child: SettingListItem(
-                  icon: item['icon'] as IconData,
-                  title: item['title'] as String,
-                  onTap: () => handleTap(item['title'] as String),
-                ),
+    child: ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemCount: settings.length,
+      itemBuilder: (context, index) {
+        final item = settings[index];
+        return AnimationConfiguration.staggeredList(
+          position: index,
+          duration: const Duration(milliseconds: 375),
+          child: SlideAnimation(
+            verticalOffset: 50.0,
+            child: FadeInAnimation(
+              child: SettingListItem(
+                icon: item['icon'] as IconData,
+                title: item['title'] as String,
+                onTap: () => handleTap(item['title'] as String, context),
               ),
             ),
-          );
-        }),
+          ),
+        );
+      },
+    ),
+  );
+}
+
+// Widget placeholder (tidak berubah)
+Widget _buildPlaceholder({required IconData icon, required String message}) {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 60, color: Colors.grey.shade300),
+        const SizedBox(height: 16),
+        Text(message, style: const TextStyle(color: AppColors.textSecondary, fontSize: 16)),
       ],
     ),
   );
 }
 
+// Dialog logout (tidak berubah)
 void _showLogoutDialog(BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Confirm Logout', style: AppTextStyles.headerTitle),
-        content: const Text('Are you sure you want to log out?', style: TextStyle(color: AppColors.textSecondary)),
-        actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Logout Successful'),
-                  backgroundColor: Colors.green,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-                (Route<dynamic> route) => false,
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.danger,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            ),
-            child: const Text('Logout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      );
-    },
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text('Konfirmasi Logout', style: AppTextStyles.headerTitle),
+      content: const Text('Apakah Anda yakin ingin keluar?', style: TextStyle(color: AppColors.textSecondary)),
+      actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Batal', style: TextStyle(color: AppColors.textSecondary))),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Logout Berhasil'), backgroundColor: Colors.green, behavior: SnackBarBehavior.floating));
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const LoginPage()), (Route<dynamic> route) => false);
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          child: const Text('Logout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        ),
+      ],
+    ),
   );
 }
 
-// -- Widget Interaktif untuk Item Menu --
+// Widget SettingListItem (tidak berubah)
 class SettingListItem extends StatefulWidget {
   final IconData icon;
   final String title;
   final VoidCallback onTap;
-
-  const SettingListItem({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
+  const SettingListItem({super.key, required this.icon, required this.title, required this.onTap});
 
   @override
   State<SettingListItem> createState() => _SettingListItemState();
@@ -201,25 +194,11 @@ class _SettingListItemState extends State<SettingListItem> {
 
   @override
   Widget build(BuildContext context) {
-    final transform = _isPressed
-        ? (Matrix4.identity()..scale(0.96))
-        : (_isHovered
-            ? (Matrix4.identity()..translate(0, -4, 0))
-            : Matrix4.identity());
-
+    final transform = _isPressed ? (Matrix4.identity()..scale(0.96)) : (_isHovered ? (Matrix4.identity()..translate(0, -4, 0)) : Matrix4.identity());
     final decoration = BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(15),
-      boxShadow: [
-        BoxShadow(
-          color: _isHovered
-              ? AppColors.primary.withOpacity(0.2)
-              : Colors.blue.shade50.withOpacity(0.5),
-          spreadRadius: _isHovered ? 3 : 1,
-          blurRadius: _isHovered ? 12 : 10,
-          offset: _isHovered ? const Offset(0, 8) : const Offset(0, 4),
-        ),
-      ],
+      boxShadow: [BoxShadow(color: _isHovered ? AppColors.primary.withOpacity(0.2) : Colors.blue.shade50.withOpacity(0.5), spreadRadius: _isHovered ? 3 : 1, blurRadius: _isHovered ? 12 : 10, offset: _isHovered ? const Offset(0, 8) : const Offset(0, 4))],
     );
 
     return MouseRegion(
@@ -242,14 +221,7 @@ class _SettingListItemState extends State<SettingListItem> {
           decoration: decoration,
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(widget.icon, color: AppColors.primary, size: 24),
-              ),
+              Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)), child: Icon(widget.icon, color: AppColors.primary, size: 24)),
               const SizedBox(width: 16),
               Expanded(child: Text(widget.title, style: AppTextStyles.settingItem)),
               const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),

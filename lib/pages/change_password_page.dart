@@ -23,99 +23,129 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Change Password'),
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textPrimary),
-        titleTextStyle: AppTextStyles.headerTitle.copyWith(fontSize: 20),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Form(
-          key: _formKey,
-          child: AnimationLimiter(
-            child: Column(
-              children: AnimationConfiguration.toStaggeredList(
-                duration: const Duration(milliseconds: 375),
-                childAnimationBuilder: (widget) => SlideAnimation(
-                  verticalOffset: 50.0,
-                  child: FadeInAnimation(child: widget),
+      body: Column(
+        children: [
+          // BAGIAN 1: Panel Header (Atas)
+          Expanded(
+            flex: 1,
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primary, AppColors.lightBlue],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
+              ),
+              child: Stack(
                 children: [
-                  _buildHeader(),
-                  const SizedBox(height: 30),
-                  _buildPasswordField(
-                    controller: _currentPasswordController,
-                    label: 'Current Password',
-                    isVisible: _isCurrentPasswordVisible,
-                    toggleVisibility: () => setState(() => _isCurrentPasswordVisible = !_isCurrentPasswordVisible),
+                  // Tombol Kembali
+                  Positioned(
+                    top: 40,
+                    left: 10,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  _buildPasswordField(
-                    controller: _newPasswordController,
-                    label: 'New Password',
-                    isVisible: _isNewPasswordVisible,
-                    toggleVisibility: () => setState(() => _isNewPasswordVisible = !_isNewPasswordVisible),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildPasswordField(
-                    controller: _confirmPasswordController,
-                    label: 'Confirm New Password',
-                    isVisible: _isConfirmPasswordVisible,
-                    toggleVisibility: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
-                    validator: (value) {
-                      if (value != _newPasswordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 40),
-                  InteractiveButton(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Password updated successfully!'),
-                            backgroundColor: Colors.green,
-                            behavior: SnackBarBehavior.floating,
+                  // Konten Header
+                  const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.lock_reset, color: Colors.white, size: 60),
+                        SizedBox(height: 16),
+                        Text(
+                          'Ubah Password',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
-                        );
-                        Navigator.pop(context);
-                      }
-                    },
-                    text: 'Update Password',
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
-        ),
+          // BAGIAN 2: Panel Formulir (Bawah)
+          Expanded(
+            flex: 3,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: _buildChangePasswordForm(),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: const Column(
-        children: [
-          Icon(Icons.security_update_good_outlined, color: AppColors.primary, size: 50),
-          SizedBox(height: 16),
-          Text('Update Your Password', style: AppTextStyles.headerTitle, textAlign: TextAlign.center),
-          SizedBox(height: 8),
-          Text(
-            'For your security, please use a strong and unique password.',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
-            textAlign: TextAlign.center,
+  Widget _buildChangePasswordForm() {
+    return Form(
+      key: _formKey,
+      child: AnimationLimiter(
+        child: Column(
+          children: AnimationConfiguration.toStaggeredList(
+            duration: const Duration(milliseconds: 400),
+            childAnimationBuilder: (widget) => SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(child: widget),
+            ),
+            children: [
+              const SizedBox(height: 10),
+              _buildPasswordField(
+                controller: _currentPasswordController,
+                label: 'Password Saat Ini',
+                isVisible: _isCurrentPasswordVisible,
+                toggleVisibility: () => setState(() => _isCurrentPasswordVisible = !_isCurrentPasswordVisible),
+              ),
+              const SizedBox(height: 20),
+              _buildPasswordField(
+                controller: _newPasswordController,
+                label: 'Password Baru',
+                isVisible: _isNewPasswordVisible,
+                toggleVisibility: () => setState(() => _isNewPasswordVisible = !_isNewPasswordVisible),
+              ),
+              const SizedBox(height: 20),
+              _buildPasswordField(
+                controller: _confirmPasswordController,
+                label: 'Konfirmasi Password Baru',
+                isVisible: _isConfirmPasswordVisible,
+                toggleVisibility: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                validator: (value) {
+                  if (value != _newPasswordController.text) return 'Password tidak cocok';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 40),
+              InteractiveButton(
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password berhasil diperbarui!'),
+                        backgroundColor: Colors.green,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+                text: 'Perbarui Password',
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -146,26 +176,19 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         ),
       ),
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'This field cannot be empty';
-        }
-        if (label == 'New Password' && value.length < 6) {
-          return 'Password must be at least 6 characters';
-        }
-        if (validator != null) {
-          return validator(value);
-        }
+        if (value == null || value.isEmpty) return 'Kolom ini tidak boleh kosong';
+        if (label == 'Password Baru' && value.length < 6) return 'Password minimal 6 karakter';
+        if (validator != null) return validator(value);
         return null;
       },
     );
   }
 }
 
-// -- Widget Tombol Interaktif Baru --
+// Widget tombol interaktif
 class InteractiveButton extends StatefulWidget {
   final VoidCallback onTap;
   final String text;
-
   const InteractiveButton({super.key, required this.onTap, required this.text});
 
   @override
@@ -192,29 +215,10 @@ class _InteractiveButtonState extends State<InteractiveButton> {
           height: 55,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.lightBlue],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            gradient: const LinearGradient(colors: [AppColors.primary, AppColors.lightBlue], begin: Alignment.centerLeft, end: Alignment.centerRight),
+            boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
           ),
-          child: Center(
-            child: Text(
-              widget.text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          child: Center(child: Text(widget.text, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
         ),
       ),
     );

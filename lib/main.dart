@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Poppins', // Opsional: gunakan font yang lebih modern
       ),
-      initialRoute: '/',
+      initialRoute: 'LoginPage',
       routes: {
         '/' : (context) => const HomePage(),
         'LoginPage': (context) => const LoginPage(),

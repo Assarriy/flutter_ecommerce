@@ -3,7 +3,7 @@ import 'package:ecommerce_app/pages/account_page.dart';
 import 'package:ecommerce_app/pages/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:ecommerce_app/app_styles.dart';
+// import 'package:ecommerce_app/app_styles.dart';
 import 'package:ecommerce_app/widgets/CategoriesWidget.dart';
 import 'package:ecommerce_app/widgets/HomeAppBar.dart';
 import 'package:ecommerce_app/widgets/ItemsWidget.dart';
