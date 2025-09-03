@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app/app_styles.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
-// Model data sederhana untuk setiap item
 class CartItem {
   final String image;
   final String name;
   final String price;
   int quantity;
-  bool isVisible; // Untuk menyembunyikan item (Tugas 3.3.6)
+  bool isVisible;
 
   CartItem({
     required this.image,
@@ -18,7 +18,6 @@ class CartItem {
   });
 }
 
-// PERUBAHAN: Diubah menjadi StatefulWidget
 class CartItemSamples extends StatefulWidget {
   const CartItemSamples({super.key});
 
@@ -27,100 +26,105 @@ class CartItemSamples extends StatefulWidget {
 }
 
 class _CartItemSamplesState extends State<CartItemSamples> {
-  // Data item sekarang menjadi bagian dari state
   final List<CartItem> items = [
-    CartItem(image: 'images/carts/1.jpeg', name: 'Product Title 1', price: 'Rp 850.000', quantity: 1),
-    CartItem(image: 'images/carts/2.jpeg', name: 'Product Title 2', price: 'Rp 950.000', quantity: 2),
-    CartItem(image: 'images/carts/3.jpeg', name: 'Product Title 3', price: 'Rp 750.000', quantity: 1),
-    CartItem(image: 'images/carts/4.jpeg', name: 'Product Title 4', price: 'Rp 1.250.000', quantity: 1),
+    CartItem(image: 'images/items/1.jpeg', name: 'Product Title 1', price: 'Rp 850.000', quantity: 1),
+    CartItem(image: 'images/items/2.jpeg', name: 'Product Title 2', price: 'Rp 950.000', quantity: 2),
+    CartItem(image: 'images/items/3.jpeg', name: 'Product Title 3', price: 'Rp 750.000', quantity: 1),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // STRUKTUR FOR LOOP TETAP DIPERTAHANKAN
-        for (int i = 0; i < items.length; i++)
-          // TUGAS 3.3.6: Widget Visibility untuk menyembunyikan item
-          Visibility(
-            visible: items[i].isVisible,
-            child: _buildItemCard(items[i]),
-          ),
-      ],
+    // PERUBAHAN: Menambahkan AnimationLimiter untuk animasi entri
+    return AnimationLimiter(
+      child: Column(
+        children: [
+          for (int i = 0; i < items.length; i++)
+            // PERUBAHAN: Membungkus item dengan widget animasi
+            AnimationConfiguration.staggeredList(
+              position: i,
+              duration: const Duration(milliseconds: 375),
+              child: SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: Visibility(
+                    visible: items[i].isVisible,
+                    child: _buildItemCard(items[i]),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
+  // PERUBAHAN: Desain ulang kartu item menjadi vertikal
   Widget _buildItemCard(CartItem item) {
-    return Container(
-      padding: const EdgeInsets.all(12),
+    return Card(
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        // TUGAS 3.3.4: Menambahkan efek shadow
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          )
-        ],
-      ),
-      child: Row(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 4,
+      shadowColor: Colors.black.withOpacity(0.1),
+      child: Column(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(item.image, width: 80, height: 80, fit: BoxFit.cover),
+          // Bagian Gambar dengan Tombol Hapus di atasnya
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: Image.asset(
+                  item.image,
+                  height: 150, // Memberi tinggi lebih pada gambar
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              // Tombol Hapus di pojok kanan atas
+              Positioned(
+                top: 8,
+                right: 8,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      item.isVisible = false;
+                    });
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white.withOpacity(0.8),
+                    child: const Icon(Icons.delete_outline, color: AppColors.danger, size: 24),
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
+          // Bagian Detail Produk
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(item.name, style: AppTextStyles.settingItem, overflow: TextOverflow.ellipsis),
-                    ),
-                    // TUGAS 3.3.6: Tombol Delete diaktifkan
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline, color: AppColors.danger, size: 24),
-                      onPressed: () {
-                        setState(() {
-                          item.isVisible = false;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                Text(item.name, style: AppTextStyles.headerTitle.copyWith(fontSize: 18)),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(item.price, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 18)),
-                    // TUGAS 3.3.5: Kontrol kuantitas diaktifkan
+                    Text(item.price, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 20)),
                     _buildQuantityControl(
                       quantity: item.quantity,
                       onRemove: () {
                         if (item.quantity > 1) {
-                          setState(() {
-                            item.quantity--;
-                          });
+                          setState(() => item.quantity--);
                         }
                       },
                       onAdd: () {
-                        setState(() {
-                          item.quantity++;
-                        });
+                        setState(() => item.quantity++);
                       },
                     ),
                   ],
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );

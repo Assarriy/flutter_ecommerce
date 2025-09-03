@@ -1,3 +1,4 @@
+import 'package:ecommerce_app/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'register_page.dart';
@@ -111,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                       // Ganti dengan navigasi yang benar setelah login berhasil
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const AccountPage()),
+                        MaterialPageRoute(builder: (context) => const HomePage()),
                       );
                     }
                   },

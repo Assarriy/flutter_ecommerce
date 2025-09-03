@@ -7,27 +7,59 @@ class CartBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // PERUBAHAN: Menggunakan Container dengan dekorasi baru
     return Container(
-      height: 130,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      // Memberi tinggi yang lebih pas
+      height: 100, 
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 3, blurRadius: 10, offset: const Offset(0, -5))],
+        // PERUBAHAN: Sudut atas yang membulat
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 3,
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
-      child: Column(
+      // PERUBAHAN: Menggunakan Row untuk layout horizontal
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // PERUBAHAN: Hierarki visual baru untuk total harga
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Total:", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-              Text("Rp2.950.000", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primary)),
+              const Text(
+                "Total Price",
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                totalAmount,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
             ],
           ),
-          // TUGAS 3.3.7: Tombol ini sudah memiliki efek klik/animasi
-          InteractiveButton(
-            onTap: () {},
-            text: "Check Out",
+          // Tombol Check Out dengan lebar yang lebih pas
+          SizedBox(
+            width: 160, // Memberi lebar tetap pada tombol
+            child: InteractiveButton(
+              onTap: () {},
+              text: "Check Out",
+            ),
           )
         ],
       ),
@@ -64,15 +96,30 @@ class _InteractiveButtonState extends State<InteractiveButton> {
           width: double.infinity,
           height: 55,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(20), // Sudut lebih membulat
             gradient: const LinearGradient(
               colors: [AppColors.primary, AppColors.lightBlue],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
-            boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5))],
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-          child: Center(child: Text(widget.text, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
+          child: Center(
+            child: Text(
+              widget.text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
       ),
     );

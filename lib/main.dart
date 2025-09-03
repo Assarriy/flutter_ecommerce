@@ -1,5 +1,6 @@
 import 'package:ecommerce_app/pages/account_page.dart';
 import 'package:ecommerce_app/pages/cart_page.dart';
+import 'package:ecommerce_app/pages/home_page.dart';
 import 'package:ecommerce_app/pages/login_page.dart';
 import 'package:ecommerce_app/pages/register_page.dart';
 import 'package:flutter/material.dart'; // <-- Pastikan import file login_page.dart
@@ -20,8 +21,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Poppins', // Opsional: gunakan font yang lebih modern
       ),
-      initialRoute: 'LoginPage',
+      initialRoute: '/',
       routes: {
+        '/' : (context) => const HomePage(),
         'LoginPage': (context) => const LoginPage(),
         'RegisterPage': (context) => const RegisterPage(),
         'AccountPage': (context) => const AccountPage(),
